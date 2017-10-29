@@ -32,7 +32,7 @@ def root():
 
 @fluxapp.route('/tmp/<path:path>')
 def send_tmp(path):
-    return send_from_directory('/var/www/tmp', path)
+    return send_from_directory(config.TMPDIR_WWW, path)
 
 
 @fluxapp.route('/api/flux', methods=['GET'])
