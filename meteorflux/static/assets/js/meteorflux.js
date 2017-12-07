@@ -1,9 +1,9 @@
 	debug = function (msg) { if (window.console != undefined) { console.log(msg); } }
-	
+
 	var showers = [
 		{code:"GDR", r:"3.0", begin:"07/24", end:"07/30", max:"07/27", name:"July Gamma Draconids"},
 		{code:"QUA", r:"2.1", begin:"01/01", end:"01/05", max:"01/03", name:"Quadrantids        "},
-		{code:"ACE", r:"2.0", begin:"01/28", end:"02/21", max:"02/07", name:"alpha-Centaurids   "},			
+		{code:"ACE", r:"2.0", begin:"01/28", end:"02/21", max:"02/07", name:"alpha-Centaurids   "},
 		{code:"DLE", r:"3.0", begin:"02/15", end:"03/10", max:"02/24", name:"delta-Leonids      "},
 		{code:"GNO", r:"2.4", begin:"02/25", end:"03/22", max:"03/13", name:"gamma-Normids      "},
 		{code:"LYR", r:"2.1", begin:"04/16", end:"04/25", max:"04/22", name:"Lyrids             "},
@@ -15,7 +15,7 @@
 		{code:"JBO", r:"2.2", begin:"06/22", end:"07/02", max:"06/27", name:"June-Bootids       "},
 		{code:"PAU", r:"3.2", begin:"07/15", end:"08/10", max:"07/28", name:"Piscis-Austrinids  "},
 		{code:"SDA", r:"3.2", begin:"07/12", end:"08/19", max:"07/28", name:"S-delta-Aquarids   "},
-		{code:"CAP", r:"2.5", begin:"07/03", end:"08/15", max:"07/30", name:"alpha-Capricornids "},			
+		{code:"CAP", r:"2.5", begin:"07/03", end:"08/15", max:"07/30", name:"alpha-Capricornids "},
 		{code:"PER", r:"2.2", begin:"07/17", end:"08/24", max:"08/12", name:"Perseids           "},
 		{code:"KCG", r:"3.0", begin:"08/03", end:"08/25", max:"08/17", name:"kappa-Cygnids      "},
 		{code:"AUR", r:"2.5", begin:"08/25", end:"09/08", max:"09/01", name:"alpha-Aurigids     "},
@@ -39,21 +39,31 @@
 		{code:"HYD", r:"3.0", begin:"12/03", end:"12/15", max:"12/12", name:"sigma-Hydrids      "},
 		{code:"GEM", r:"2.6", begin:"12/07", end:"12/17", max:"12/14", name:"Geminids           "},
 		{code:"COM", r:"3.0", begin:"12/12", end:"12/31", max:"12/19", name:"Coma-Berenicids    "},
-		{code:"URS", r:"3.0", begin:"12/17", end:"12/26", max:"12/22", name:"Ursids             "},	
-	];	
+		{code:"URS", r:"3.0", begin:"12/17", end:"12/26", max:"12/22", name:"Ursids             "},
+	];
 
 
-	
-	function get_binarg_meteors() {
-		return Math.round(Math.pow(10, $( "#slider-meteors" ).slider( "value" )))
+
+	function get_binarg_meteors(ui) {
+        if (typeof ui !== 'undefined') {
+            slider_value = ui.value
+        } else {
+            slider_value = $( "#slider-meteors" ).slider( "value" )
+        }
+		return Math.round(Math.pow(10, slider_value))
 	}
 
-	function get_binarg_eca() {
-		return Math.round(Math.pow(10, $( "#slider-eca" ).slider( "value" )))
+	function get_binarg_eca(ui) {
+        if (typeof ui !== 'undefined') {
+            slider_value = ui.value
+        } else {
+            slider_value = $( "#slider-eca" ).slider( "value" )
+        }
+		return Math.round(Math.pow(10, slider_value))
 	}
-	
-	function get_binarg_eca_pretty() {
-		return get_binarg_eca()*1000 +" km<sup>2</sup> &middot; h ";
+
+	function get_binarg_eca_pretty(ui) {
+		return get_binarg_eca(ui)*1000 +" km<sup>2</sup> &middot; h ";
 	}
 
     function get_timestamp(field) {
@@ -61,7 +71,7 @@
         time = $('#'+field+'time').val()+':00'
         return date+'T'+time
     }
-	
+
 	function duration_to_hours(duration) {
 		hours = Math.pow(10, duration);
 		// Ensure the value given to the webservice call is exactly equal to the value shown to the user
@@ -73,10 +83,10 @@
 			return hours.toFixed(0);
 		} else {
 			return Math.round(hours/24.0)*24.0;
-		}		
+		}
 		return hours;
 	}
-	
+
 	function format_duration(duration) {
 		hours = Math.pow(10, duration);
 		if (hours < 1.01) {
@@ -90,7 +100,7 @@
 		}
 	}
 
-    
+
     function loadplot() {
         // This is the function called when "Create Graph" is clicked
         // It will send a request for a flux profile to the server.
@@ -99,7 +109,7 @@
         $('#fluxresult').html("<div class='please-wait'>" +
                               "<img src='assets/images/spinner.gif' />" +
                               "Crunching data</div>");
-        
+
         // Where is the service?
         url = "/api/flux?"
 
@@ -110,22 +120,22 @@
         url += "&year=" + $('#year').val();
         url += "&avg=" + $('#avg').prop('checked');
         url += "&min_interval=" + duration_to_hours($("#slider-duration").slider("values", 0));
-        url += "&max_interval=" + duration_to_hours($("#slider-duration").slider("values", 1));  
+        url += "&max_interval=" + duration_to_hours($("#slider-duration").slider("values", 1));
         url += "&min_meteors=" + get_binarg_meteors();
         url += "&min_eca=" + get_binarg_eca()*1000;
         url += "&min_alt=" + $( '#min_alt' ).val();
         url += "&gamma=" + $( '#gamma' ).val();
         url += "&popindex=" + $( '#popindex' ).val();
-        
+
         ymax = $('#ymax').val();
         if ( ymax ) {
             url += "&ymax=" + ymax;
         }
-        
+
         // Send the request!
         $.getJSON(url, parseFluxResponse)
     }
-	
+
 
     function parseFluxResponse(data) {
         // This function is called when a JSON message is received
@@ -139,8 +149,8 @@
             console.log(data);
             return;
         }
-        
-        var items = []; 
+
+        var items = [];
 
         if ('graph' in data) {
             items.push('<img src="'+data['graph']+'" class="img-flux"/>');
@@ -169,23 +179,23 @@
             });
             items.push('</table>');
         }
-     
+
         $('#fluxresult').html(items.join(''));
     }
 
 	$(function() {
         $('#tabs').tab();
-				
+
 		$( "#slider-meteors" ).slider({
 			min: -0.35,
 			max: 3.0,
 			step:0.0001,
 			value: Math.log(50) / Math.log(10),
 			slide: function( event, ui ) {
-				$( "#binarg-meteors" ).html( get_binarg_meteors() );
+				$( "#binarg-meteors" ).html( get_binarg_meteors(ui) );
 			}
 		});
-		
+
 		$( "#binarg-meteors" ).html( get_binarg_meteors() );
 
 		$( "#slider-eca" ).slider({
@@ -194,12 +204,12 @@
 			step:0.0001,
 			value: Math.log(20) / Math.log(10),
 			slide: function( event, ui ) {
-				$( "#binarg-eca" ).html( get_binarg_eca_pretty() );
+				$( "#binarg-eca" ).html( get_binarg_eca_pretty(ui) );
 			}
 		});
-		
+
 		$( "#binarg-eca" ).html( get_binarg_eca_pretty() );
-		
+
 		$( "#slider-duration" ).slider({
 			range: true,
 			min: -1.7,
@@ -213,23 +223,23 @@
 		});
 		$( "#duration" ).text( format_duration( $("#slider-duration").slider("values", 0) ) +
 			" - " + format_duration( $("#slider-duration").slider("values", 1) ) );
-		
-		
+
+
 		$( "#selectable" ).selectable({
-				filter:'tr,td,th', 
-				
+				filter:'tr,td,th',
+
 		});
-			
+
 		$( "button.btn-graph").button();
 		$( "button.btn-graph" ).click(function() {
-			loadplot(); 
+			loadplot();
 		});
-		
-		
-		$( "#showercode" ).change(function() {  
+
+
+		$( "#showercode" ).change(function() {
 				showerchoice = $("#showercode").val();
 				today = new Date();
-				
+
 				if (showerchoice == "SPO" || showerchoice == "ANT") {
 					$("#startdate").val( (today.getMonth()+1)+"/1" );
 					$("#stopdate").val( (today.getMonth()+2)+"/1" );
@@ -240,7 +250,7 @@
 					/* Loop through array of shower data */
 					for(var i=0, len = showers.length; i < len; i++) {
 						if (showers[i].code == showerchoice) {
-							
+
 							$("#startdate").val( showers[i].begin );
 							$("#stopdate").val( showers[i].end );
                             $('#starttime').val('12:00');
@@ -250,6 +260,6 @@
 						}
 					}
 				}
-		});		
-		
+		});
+
 	});
