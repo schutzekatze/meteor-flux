@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(name='meteorflux',
       description="Powers meteorflux.io.",
@@ -7,7 +7,8 @@ setup(name='meteorflux',
       author_email='hello@geert.io',
       license='MIT',
       url='http://meteorflux.io',
-      packages=['meteorflux'],
+      packages=find_packages(),
+      include_package_data=True,
       install_requires=['numpy',
                         'matplotlib',
                         'astropy',
