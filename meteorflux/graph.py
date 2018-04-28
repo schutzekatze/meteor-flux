@@ -55,9 +55,9 @@ class BaseGraph(object):
         self.fig.savefig(myfile2, format='pdf', dpi=dpi)
 
         if web:
-            return config.TMPDIR_WWW+'/'+os.path.basename(myfile.name)
             myfile.close()
             plt.close()
+            return config.TMPDIR_WWW+'/'+os.path.basename(myfile.name)
         else:
             return myfile
 
