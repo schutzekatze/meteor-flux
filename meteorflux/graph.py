@@ -16,24 +16,29 @@ from . import config, util
 
 params = {'backend': 'Agg',
           'axes.labelsize': 18,
+          'axes.labelpad': 16,
+          'lines.dotted_pattern': [1.0, 4.0],
+          'lines.markeredgewidth': 1,
+          'grid.linestyle': 'dotted',
+          'grid.color': '#303030',
           'font.size': 16,
           'legend.fontsize': 16,
           'xtick.labelsize': 14,
           'xtick.major.size': 8,
           'xtick.minor.size': 4,
           'ytick.labelsize': 14,
-          'figure.figsize': (11,6)}
+          'figure.figsize': (11,6),
+          'errorbar.capsize': 2,}
 plt.rcParams.update(params)
 #plt.rcParams['axes.facecolor'] = 'F0F0F0'
 #plt.rcParams['axes.edgecolor'] = 'E7E7E7'
 plt.rcParams['axes.prop_cycle'] = cycler('color', ['#C5000B', '#0084D1', '#008000', '#FFD320'])
 
-
 class BaseGraph(object):
 
     def __init__(self):
         self.fig = plt.figure(dpi=config.DPI) # 11*80 = 880 pixels wide!
-        self.fig.subplots_adjust(0.1,0.17,0.92,0.87)
+        self.fig.subplots_adjust(top=0.85, bottom=0.235, left=0.1, right=0.9)
 
     def show(self):
         self.fig.show()        
@@ -50,9 +55,9 @@ class BaseGraph(object):
         self.fig.savefig(myfile2, format='pdf', dpi=dpi)
 
         if web:
-            return config.TMPDIR_WWW+'/'+os.path.basename(myfile.name)
             myfile.close()
             plt.close()
+            return config.TMPDIR_WWW+'/'+os.path.basename(myfile.name)
         else:
             return myfile
 
